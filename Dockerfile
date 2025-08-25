@@ -1,10 +1,9 @@
 FROM alpine:3.18.3
 
+# Install Node.js for ECU proxy
+RUN apk add --no-cache nodejs npm
+
 # Setup tailscale
-WORKDIR /tailscale.d
-
-COPY start.sh /tailscale.d/start.sh
-
 ENV TAILSCALE_VERSION "latest"
 ENV TAILSCALE_HOSTNAME "railway-app"
 ENV TAILSCALE_ADDITIONAL_ARGS ""
@@ -16,5 +15,10 @@ RUN apk update && apk add ca-certificates iptables ip6tables && rm -rf /var/cach
 
 RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
 
+# Copy our files
+COPY start.sh ./
+COPY ecu-proxy.js ./
+
 RUN chmod +x ./start.sh
+
 CMD ["./start.sh"]
